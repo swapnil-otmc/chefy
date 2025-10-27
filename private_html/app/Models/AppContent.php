@@ -71,10 +71,94 @@ class AppContent extends Model
         ->first();
     }
 
-    /// addded code
    
 
-    
+  public function appContent($request,$id)
+    {
+        // Initialize the query
+        // $query = AppContent::where('app_data_id', 11) // Example app_data_id
+        //     ->where('status', self::ACTIVE_STATUS)
+        //     ->with([
+        //         'contentData' => function ($query) {
+        //             $query->where('status', self::ACTIVE_STATUS);
+        //         },
+        //         'subCategoryType' => function ($query) {
+        //             $query->where('status', self::ACTIVE_STATUS);
+        //         },
+        //         'contentType' => function ($query) {
+        //             $query->where('status', self::ACTIVE_STATUS);
+        //         },
+        //         'appData' => function ($query) {
+        //             $query->where('status', self::ACTIVE_STATUS);
+        //         },
+        //         'contentImage' => function ($query) {
+        //             $query->where('status', self::ACTIVE_STATUS);
+        //         },
+        //         'videoContentUrl' => function ($query) {
+        //             $query->where('status', self::ACTIVE_STATUS);
+        //         },
+        //         'categoryType' => function ($query) {
+        //             $query->where('status', self::ACTIVE_STATUS);
+        //         },
+        //         'contentTitle' => function ($query) {
+        //             $query->where('status', self::ACTIVE_STATUS);
+        //         }
+        //     ]);
+
+        // // Apply ordering based on certain conditions (priority)
+        // // if (in_array($request['sub_category_id'], [44, 45, 46])) {
+        // //     // For these specific sub_category_ids, order by ASC
+        // //     $query->orderBy('priority', 'ASC');
+        // // } else {
+        // //     // For other cases, order by DESC
+        // //     $query->orderBy('priority', 'DESC');
+        // // }
+
+        // // If on Homepage, limit results (reduce data)
+        // // if ($request['redirection'] == 'home') {
+        // //     $query->take(30); // Limit results to 30
+        // // }
+
+        // // // Additional filtering by menuId if needed
+        // // if ($request['menu_id'] !== 0) {
+        // //     $query->where('category_id', $request['menu_id']);
+        // // }
+
+        // // Execute the query and fetch the results
+        // return $query->get();
+
+        $query = AppContent::where('sub_category_id', $id)
+            ->with([
+                'contentData' => function ($query) {
+                    $query->where('status', self::ACTIVE_STATUS);
+                },
+                'subCategoryType' => function ($query) {
+                    $query->where('status', self::ACTIVE_STATUS);
+                },
+                'contentType' => function ($query) {
+                    $query->where('status', self::ACTIVE_STATUS);
+                },
+                'appData' => function ($query) {
+                    $query->where('status', self::ACTIVE_STATUS);
+                },
+                'contentImage' => function ($query) {
+                    $query->where('status', self::ACTIVE_STATUS);
+                },
+                'videoContentUrl' => function ($query) {
+                    $query->where('status', self::ACTIVE_STATUS);
+                },
+                'categoryType' => function ($query) {
+                    $query->where('status', self::ACTIVE_STATUS);
+                },
+                'contentTitle' => function ($query) {
+                    $query->where('status', self::ACTIVE_STATUS);
+                }
+            ])
+            ->orderBy('priority','DESC')
+        ->get();
+        //   dd( $query->toarray());
+        return $query;
+    }
 
 
 }

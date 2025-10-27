@@ -6,14 +6,19 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\UserLoginOtp;
 use App\Models\UserLoginData;
+// use App\Http\Controllers\PaymentHistory;
+use App\Models\Payment;
+use App\Models\PaymentHistory;
 use App\Http\Controllers\SMSController;
+use App\Http\Requests\StoreUserRequest;
+use Illuminate\Validation\ValidationException;
 
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
-    private $fixed_otp_for = array("7798180671","9768634049","7066710242");
-    // private $fixed_otp_for = array("9326571635");
+    // private $fixed_otp_for = array("7798180671","9768634049","7066710242");
+    private $fixed_otp_for = array("9326571635");
     //send otp to user for login process 
 
       public function login(Request $request) {
@@ -394,6 +399,77 @@ class LoginController extends Controller
 
         // Updated code 
         $userLoginData = UserLoginData::createUser($userId,$accessToken,$request['device'],$request['token'],$request['deviceDetail'],$loginTime,$request['appId']);
+    }
+
+
+       public function subscriptionToggle(Request $request) {
+        // $validator = $request->validated();
+        // dd($validator);
+        try {
+    $request->validate([
+        'mobile_number' => 'required|digits:10',
+    ], [
+        'mobile_number.digits' => 'The mobile number must be exactly 10 digits.',
+    ]);
+        // $validator = $this->validateMobileNumber($request);
+        // $validator = $this->validateAction($validator);
+
+        // if ($validator->fails()) {
+        //     $response = $this->getErrorMessages($validator->errors());
+        //     return $this->sendResponse($response, 'Errors Found');
+        // }
+        $userID = User::getIDFromMobileNumber($request->mobile_number);
+        $alreadyPaid = Payment::verifyPaymentByUserID($userID);
+
+        switch ($request->action) {
+            case 'activate':
+                if ($alreadyPaid) {
+                    $response['message'] = 'Already Activated';
+                } else {
+                    $paymentInfo = $this->getPaymentInfo($userID);
+                    $paymentID = Payment::create($paymentInfo);
+                    $paymentCleared = PaymentHistory::create($paymentID, $paymentInfo);
+
+                    $response['message'] = $paymentCleared
+                        ? 'Activation Successful'
+                        : 'Something Went Wrong. Please Try Again.';
+                }
+                break;
+            case 'deactivate':
+                if (!$alreadyPaid) {
+                    $response['message'] = 'Already Deactivated';
+                } else {
+                    $paymentStatus = Payment::deactivate($userID);
+
+                    if ($paymentStatus && PaymentHistory::deactivate($userID)) {
+                        $response['message'] = 'Deactivation Successful';
+                    } else {
+                        $response['message'] = 'Something Went Wrong. Please Try Again.';
+                    }
+                }
+                break;
+            default:
+                $response['message'] = 'Invalid action.';
+        }
+        return $this->sendResponse($response, 'No Errors Found');
+        } catch (\Exception $e) {
+    return $this->sendError($e);
+}
+    }
+
+      private function getPaymentInfo(int $userID) {
+        return [
+            'userID' => $userID,
+            'appID' => config('global.APP_ID'),
+            'description' => 'Yearly Subscription',
+            'currency' => 'INR',
+            'paymentStatus' => 'Success',
+            'subscriptionStatus' => 'Active',
+            'amount' => config('global.AMOUNT'),
+            'comment' => 'Internal',
+            'subcriptionEndDate' => Carbon::now()->addYear(1)->format('Y-m-d H:i:s'),
+            'timestamp' => Carbon::now()->format('Y-m-d H:i:s'),
+        ];
     }
 }
 

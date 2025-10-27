@@ -80,136 +80,136 @@ class CategoryController extends Controller
         
     }
 
-    private function getCategoryListById(Request $request, $id, $menuId, $redirection) {
-        // $appContent = AppContent::appContent($id);
+    // private function getCategoryListById(Request $request, $id, $menuId, $redirection) {
+    //     // $appContent = AppContent::appContent($id);
 
-        // return $this->sendError($appContent);
+    //     // return $this->sendError($appContent);
         
-        $appContent = DB::table('app_contents')
-        ->leftJoin('category_types', 'app_contents.category_id', '=', 'category_types.id')
-        ->leftJoin('sub_category_types', 'app_contents.sub_category_id', '=', 'sub_category_types.id')
-        ->leftJoin('content_data', 'app_contents.content_data_id', '=', 'content_data.id')
-        ->leftJoin('content_images', 'content_data.id', '=', 'content_images.content_data_id')
-        ->leftJoin('content_titles', 'app_contents.content_title_id', '=', 'content_titles.id')
-        ->select(
-            'content_data.id',
-            'content_data.name',
-            'content_titles.id AS content_title_id',
-            'sub_category_types.styleType',
-            'sub_category_types.thumbSize',
-            'content_data.release_date',
-            'content_data.release_date',
-            'content_data.genre',
-            'content_data.duration',
-            'content_images.h_image',
-            'content_images.v_image',
-            'sub_category_types.id AS sub_category_id',
-            'content_titles.name AS content_title_name',
-            'content_titles.h_image AS content_title_h_image',
-            'content_titles.v_image AS content_title_v_image'
-        )
-        ->where('app_contents.app_data_id', $request['appId'])
-            ->where('app_contents.sub_category_id', $id)
-            ->where('app_contents.status', 'A')
-            ->where('category_types.status', 'A')
-            ->where('sub_category_types.status', 'A')
-        ->orderBy('app_contents.priority', 'DESC');
+    //     $appContent = DB::table('app_contents')
+    //     ->leftJoin('category_types', 'app_contents.category_id', '=', 'category_types.id')
+    //     ->leftJoin('sub_category_types', 'app_contents.sub_category_id', '=', 'sub_category_types.id')
+    //     ->leftJoin('content_data', 'app_contents.content_data_id', '=', 'content_data.id')
+    //     ->leftJoin('content_images', 'content_data.id', '=', 'content_images.content_data_id')
+    //     ->leftJoin('content_titles', 'app_contents.content_title_id', '=', 'content_titles.id')
+    //     ->select(
+    //         'content_data.id',
+    //         'content_data.name',
+    //         'content_titles.id AS content_title_id',
+    //         'sub_category_types.styleType',
+    //         'sub_category_types.thumbSize',
+    //         'content_data.release_date',
+    //         'content_data.release_date',
+    //         'content_data.genre',
+    //         'content_data.duration',
+    //         'content_images.h_image',
+    //         'content_images.v_image',
+    //         'sub_category_types.id AS sub_category_id',
+    //         'content_titles.name AS content_title_name',
+    //         'content_titles.h_image AS content_title_h_image',
+    //         'content_titles.v_image AS content_title_v_image'
+    //     )
+    //     ->where('app_contents.app_data_id', $request['appId'])
+    //         ->where('app_contents.sub_category_id', $id)
+    //         ->where('app_contents.status', 'A')
+    //         ->where('category_types.status', 'A')
+    //         ->where('sub_category_types.status', 'A')
+    //     ->orderBy('app_contents.priority', 'DESC');
 
-        if(in_array($id, array(44, 45, 46))) {
-            $appContent = $appContent->orderBy('app_contents.priority', 'ASC');
-        }
-        else {
-            $appContent = $appContent->orderBy('app_contents.priority', 'DESC');
-        }
+    //     if(in_array($id, array(44, 45, 46))) {
+    //         $appContent = $appContent->orderBy('app_contents.priority', 'ASC');
+    //     }
+    //     else {
+    //         $appContent = $appContent->orderBy('app_contents.priority', 'DESC');
+    //     }
 
-        // If on Homepage, reduce results
-        if($redirection == "home") {
-            $appContent = $appContent->skip(0)->take(30);
-        }
+    //     // If on Homepage, reduce results
+    //     if($redirection == "home") {
+    //         $appContent = $appContent->skip(0)->take(30);
+    //     }
 
-        if($menuId !== 0) {
-            $appContent = $appContent->where('app_contents.category_id', $menuId);
-        }
-        $appContent =  $appContent->get();
+    //     if($menuId !== 0) {
+    //         $appContent = $appContent->where('app_contents.category_id', $menuId);
+    //     }
+    //     $appContent =  $appContent->get();
 
-        if(!is_null($appContent)) {
+    //     if(!is_null($appContent)) {
 
-            $contentLists = array();
-            $title_ids = array();
-            array_push($title_ids,0);
-            $category_id = 0;
+    //         $contentLists = array();
+    //         $title_ids = array();
+    //         array_push($title_ids,0);
+    //         $category_id = 0;
 
-            foreach($appContent as $details) {
+    //         foreach($appContent as $details) {
 
-                $contentData = array();
-                $contentData['id'] = (int)$details->id;
+    //             $contentData = array();
+    //             $contentData['id'] = (int)$details->id;
 
-                if(is_null($details->content_title_id)) {
-                    $contentData['name'] = $details->name;
-                    $contentData['styleType'] = $details->styleType;
-                    $contentData['thumbSize'] = $details->thumbSize;
-                    $contentData['year'] = $details->release_date;
-                    $contentData['genre'] = $details->genre;
-                    $contentData['duration'] = $this->convert_seconds($details->duration);
-                    $contentData['shows'] = " ";
+    //             if(is_null($details->content_title_id)) {
+    //                 $contentData['name'] = $details->name;
+    //                 $contentData['styleType'] = $details->styleType;
+    //                 $contentData['thumbSize'] = $details->thumbSize;
+    //                 $contentData['year'] = $details->release_date;
+    //                 $contentData['genre'] = $details->genre;
+    //                 $contentData['duration'] = $this->convert_seconds($details->duration);
+    //                 $contentData['shows'] = " ";
 
-                    if(empty($details->h_image)) {
-                        $contentData['h_image'] = "http://goldflixsouth.in/images/goldflix_south_1920_X_1080.png";
-                    }
-                    else {
-                        $contentData['h_image'] = config('global.CONTENT_IMAGE_PATH').$details->h_image;
-                    }
+    //                 if(empty($details->h_image)) {
+    //                     $contentData['h_image'] = "http://goldflixsouth.in/images/goldflix_south_1920_X_1080.png";
+    //                 }
+    //                 else {
+    //                     $contentData['h_image'] = config('global.CONTENT_IMAGE_PATH').$details->h_image;
+    //                 }
 
-                    if(empty($details->v_image)) {
-                        $contentData['v_image'] = "http://goldflixsouth.in/images/goldflix_south_444_X_666.png";
-                    }
-                    else {
-                        $contentData['v_image'] = config('global.CONTENT_IMAGE_PATH').$details->v_image;
-                    }
-                }
-                else {
-                    if(array_search($details->content_title_id, $title_ids)) {
-                        array_push($title_ids, $details->content_title_id);
-                        $category_id = $details->sub_category_id;
-                    }
-                    else {
-                        $contentData['name'] = $details->content_title_name;
-                        $contentData['styleType'] = $details->styleType;
-                        $contentData['thumbSize'] = $details->thumbSize;
-                        $contentData['year'] = $details->release_date;
-                        $contentData['genre'] = $details->genre;
-                        $contentData['duration'] = $this->convert_seconds($details->duration);
-                        $contentData['shows'] = " ";
+    //                 if(empty($details->v_image)) {
+    //                     $contentData['v_image'] = "http://goldflixsouth.in/images/goldflix_south_444_X_666.png";
+    //                 }
+    //                 else {
+    //                     $contentData['v_image'] = config('global.CONTENT_IMAGE_PATH').$details->v_image;
+    //                 }
+    //             }
+    //             else {
+    //                 if(array_search($details->content_title_id, $title_ids)) {
+    //                     array_push($title_ids, $details->content_title_id);
+    //                     $category_id = $details->sub_category_id;
+    //                 }
+    //                 else {
+    //                     $contentData['name'] = $details->content_title_name;
+    //                     $contentData['styleType'] = $details->styleType;
+    //                     $contentData['thumbSize'] = $details->thumbSize;
+    //                     $contentData['year'] = $details->release_date;
+    //                     $contentData['genre'] = $details->genre;
+    //                     $contentData['duration'] = $this->convert_seconds($details->duration);
+    //                     $contentData['shows'] = " ";
 
-                        if(empty($details->content_title_h_image)) {
-                            $contentData['h_image'] = "http://goldflixsouth.in/images/goldflix_south_1920_X_1080.png";
-                        }
-                        else {
-                            $contentData['h_image'] = config('global.CONTENT_IMAGE_PATH').$details->content_title_h_image;
-                        }
+    //                     if(empty($details->content_title_h_image)) {
+    //                         $contentData['h_image'] = "http://goldflixsouth.in/images/goldflix_south_1920_X_1080.png";
+    //                     }
+    //                     else {
+    //                         $contentData['h_image'] = config('global.CONTENT_IMAGE_PATH').$details->content_title_h_image;
+    //                     }
 
-                        if(empty($details->content_title_v_image)) {
-                            $contentData['v_image'] = "http://goldflixsouth.in/images/goldflix_south_444_X_666.png";
-                        }
-                        else {
-                            $contentData['v_image'] = config('global.CONTENT_IMAGE_PATH').$details->content_title_v_image;
-                        }
-                        array_push($title_ids, $details->content_title_id);
-                    }
-                }
+    //                     if(empty($details->content_title_v_image)) {
+    //                         $contentData['v_image'] = "http://goldflixsouth.in/images/goldflix_south_444_X_666.png";
+    //                     }
+    //                     else {
+    //                         $contentData['v_image'] = config('global.CONTENT_IMAGE_PATH').$details->content_title_v_image;
+    //                     }
+    //                     array_push($title_ids, $details->content_title_id);
+    //                 }
+    //             }
 
-                $contentData['titleOption'] = 1;
+    //             $contentData['titleOption'] = 1;
 
-                if(count($contentData) > 0) {
-                    array_push($contentLists, $contentData);
-                }
-            }
-            return $contentLists;
-        }
-        else {
-            return $this->sendError('No Content Found');
-        }
-    }
+    //             if(count($contentData) > 0) {
+    //                 array_push($contentLists, $contentData);
+    //             }
+    //         }
+    //         return $contentLists;
+    //     }
+    //     else {
+    //         return $this->sendError('No Content Found');
+    //     }
+    // }
 
      private function convert_seconds($seconds) {
 
@@ -285,19 +285,30 @@ class CategoryController extends Controller
             $access_code = 'guest';
         }
 
-        $appContent = AppContent::where('app_data_id', $request['appId'])
-        ->where('app_contents.status', AppContent::ACTIVE_STATUS)
-        ->where('app_contents.category_id', $request['menuId'])
-        ->with([ 'subCategoryType' => function($query) {
-            $query->where('status', AppContent::ACTIVE_STATUS);
-        }]);
+        // $appContent = AppContent::where('app_data_id', $request['appId'])
+        // ->where('app_contents.status', AppContent::ACTIVE_STATUS)
+        // ->where('app_contents.category_id', $request['menuId'])
+        // ->with([ 'subCategoryType' => function($query) {
+        //     $query->where('status', AppContent::ACTIVE_STATUS);
+        // }]);
 
-        $appContent = $appContent->join('sub_category_types', 'app_contents.sub_category_id', '=', 'sub_category_types.id')
-        ->orderBy('sub_category_types.priority', 'ASC');
+        // $appContent = $appContent->join('sub_category_types', 'app_contents.sub_category_id', '=', 'sub_category_types.id')
+        // ->orderBy('sub_category_types.priority', 'ASC');
 
-        $appContent = $appContent->with('contentData','subCategoryType','contentType','appData','contentImage')
-        ->where('sub_category_types.status', 'A')
-        ->get();
+        // $appContent = $appContent->with('contentData','subCategoryType','contentType','appData','contentImage')
+        // ->where('sub_category_types.status', 'A')
+        // ->get();
+        
+///// UPDATED CODE
+        $appContent = AppContent::select('app_contents.*')
+    ->join('sub_category_types', 'app_contents.sub_category_id', '=', 'sub_category_types.id')
+    ->where('app_contents.app_data_id', $request['appId'])
+    ->where('app_contents.status', AppContent::ACTIVE_STATUS)
+    ->where('app_contents.category_id', $request['menuId'])
+    ->where('sub_category_types.status', AppContent::ACTIVE_STATUS)
+    ->orderBy('sub_category_types.priority', 'ASC')
+    ->with(['contentData', 'subCategoryType', 'contentType', 'appData', 'contentImage'])
+    ->get();
 
         $collection = collect($appContent);
         $appContent = $collection->unique('sub_category_id');
@@ -345,4 +356,143 @@ class CategoryController extends Controller
         }
     }
 
+
+     private function getCategoryListById(Request $request, $id, $menuId, $redirection) {
+        $appContent = AppContent::appContent($request,$id);
+        
+        // return $appContent;
+        
+        // $appContent = DB::table('app_contents')
+        // ->leftJoin('category_types', 'app_contents.category_id', '=', 'category_types.id')
+        // ->leftJoin('sub_category_types', 'app_contents.sub_category_id', '=', 'sub_category_types.id')
+        // ->leftJoin('content_data', 'app_contents.content_data_id', '=', 'content_data.id')
+        // ->leftJoin('content_images', 'content_data.id', '=', 'content_images.content_data_id')
+        // ->leftJoin('content_titles', 'app_contents.content_title_id', '=', 'content_titles.id')
+        // ->select(
+        //     'content_data.id',
+        //     'content_data.name',
+        //     'content_titles.id AS content_title_id',
+        //     'sub_category_types.styleType',
+        //     'sub_category_types.thumbSize',
+        //     'content_data.release_date',
+        //     'content_data.release_date',
+        //     'content_data.genre',
+        //     'content_data.duration',
+        //     'content_images.h_image',
+        //     'content_images.v_image',
+        //     'sub_category_types.id AS sub_category_id',
+        //     'content_titles.name AS content_title_name',
+        //     'content_titles.h_image AS content_title_h_image',
+        //     'content_titles.v_image AS content_title_v_image'
+        // )
+        // ->where('app_contents.app_data_id', $request['appId'])
+        //     ->where('app_contents.sub_category_id', $id)
+        //     ->where('app_contents.status', 'A')
+        //     ->where('category_types.status', 'A')
+        //     ->where('sub_category_types.status', 'A')
+        // ->orderBy('app_contents.priority', 'DESC');
+        // return $appContent
+
+        // if(in_array($id, array(44, 45, 46))) {
+        //     $appContent = $appContent->orderBy('app_contents.priority', 'ASC');
+        // }
+        // else {
+        //     $appContent = $appContent->orderBy('app_contents.priority', 'DESC');
+        // }
+
+        // If on Homepage, reduce results
+        // if($redirection == "home") {
+        //     $appContent = $appContent->skip(0)->take(30);
+        // }
+
+        // if($menuId !== 0) {
+        //     $appContent = $appContent->where('app_contents.category_id', $menuId);
+        // }
+        // $appContent =  $appContent->get();
+        // return $appContent;
+        
+        if(!is_null($appContent)) {
+
+            $contentLists = array();
+            $title_ids = array();
+            array_push($title_ids,0);
+            $category_id = 0;
+            // dd(count($appContent));
+            foreach($appContent as $details) {
+                  
+                $contentData = array();
+                // return $details;
+             
+                $contentData['id'] = (int)$details->id;
+                
+                if(is_null($details->content_title_id)) {
+                     
+                    $contentData['name'] = $details->contentData->name;
+                    $contentData['styleType'] = $details->subCategoryType->styleType;
+                    $contentData['thumbSize'] = $details->subCategoryType->thumbSize;
+                    $contentData['year'] = $details->contentData->release_date;
+                    $contentData['genre'] = $details->contentData->genre;
+                    $contentData['duration'] = $details->contentData->duration;
+                    // $contentData['duration'] = $this->convert_seconds($details->duration);
+                    $contentData['shows'] = " ";
+
+                    if(empty($details->contentImage->h_image)) {
+                        $contentData['h_image'] = "http://goldflixsouth.in/images/goldflix_south_1920_X_1080.png";
+                    }
+                    else {
+                        $contentData['h_image'] = config('global.CONTENT_IMAGE_PATH').$details->contentImage->h_image;
+                    }
+
+                    if(empty($details->contentImage->v_image)) {
+                        $contentData['v_image'] = "http://goldflixsouth.in/images/goldflix_south_444_X_666.png";
+                    }
+                    else {
+                        $contentData['v_image'] = config('global.CONTENT_IMAGE_PATH').$details->contentImage->v_image;
+                    }
+                }
+                else {
+                    if(array_search($details->content_title_id, $title_ids)) {
+                        array_push($title_ids, $details->content_title_id);
+                        $category_id = $details->sub_category_id;
+                    }
+                    else {
+                       $contentData['name'] = $details->contentData->name;
+                    $contentData['styleType'] = $details->subCategoryType->styleType;
+                    $contentData['thumbSize'] = $details->subCategoryType->thumbSize;
+                    $contentData['year'] = $details->contentData->release_date;
+                    $contentData['genre'] = $details->contentData->genre;
+                    $contentData['duration'] = $details->contentData->duration;
+                        // $contentData['duration'] = $this->convert_seconds($details->duration);
+                        $contentData['duration'] = $details->duration;
+                        $contentData['shows'] = " ";
+
+                        if(empty($details->content_title_h_image)) {
+                            $contentData['h_image'] = "http://goldflixsouth.in/images/goldflix_south_1920_X_1080.png";
+                        }
+                        else {
+                            $contentData['h_image'] = config('global.CONTENT_IMAGE_PATH').$details->contentImage->h_image;
+                        }
+
+                        if(empty($details->content_title_v_image)) {
+                            $contentData['v_image'] = "http://goldflixsouth.in/images/goldflix_south_444_X_666.png";
+                        }
+                        else {
+                            $contentData['v_image'] = config('global.CONTENT_IMAGE_PATH').$details->contentImage->v_image;
+                        }
+                        array_push($title_ids, $details->content_title_id);
+                    }
+                }
+
+                $contentData['titleOption'] = 1;
+
+                if(count($contentData) > 0) {
+                    array_push($contentLists, $contentData);
+                }
+            }
+            return $contentLists;
+        }
+        else {
+            return $this->sendError('No Content Found');
+        }
+    }
 }

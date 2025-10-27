@@ -24,7 +24,7 @@ class User extends Authenticatable
      */
     protected $table = 'users';
     protected $fillable = [
-        'name', 'email', 'password','mobile','userrole','birthdate','status','timestamp',
+        'name', 'email', 'password','mobile','userrole','birthdate','status','timestamp','is_delete'
     ];
 
     /**
@@ -69,8 +69,8 @@ class User extends Authenticatable
         return User::where('mobile',$mobile)
             ->where('status', User::ACTIVE_STATUS)
             ->first();
+    }
 
     
-    }
 }
  

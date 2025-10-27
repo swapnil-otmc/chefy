@@ -235,8 +235,8 @@ class ContentController extends Controller
                     $contentData["description"] = $data->description;
                     $contentData["duration"] = gmdate("H:i:s", $data->duration);
                     $contentData["genre"] = $data->genre;
-                    $contentData["h_image"] = empty($data->h_image) ? "" : env("CONTENT_IMAGE_PATH").$data->h_image;
-                    $contentData["v_image"] = empty($data->v_image) ? "" : env("CONTENT_IMAGE_PATH").$data->v_image;
+                    $contentData["h_image"] = empty($data->h_image) ? "" : config("global.CONTENT_IMAGE_PATH").$data->h_image;
+                    $contentData["v_image"] = empty($data->v_image) ? "" : config("global.CONTENT_IMAGE_PATH").$data->v_image;
                     array_push($searchArr, $contentData);
                 }
             }
@@ -268,8 +268,8 @@ class ContentController extends Controller
                     $contentData['description'] = $data->description;
                     $contentData['duration'] = gmdate("H:i:s", $data->duration);
                     $contentData['genre'] = $data->genre;
-                    $contentData['h_image'] = env('CONTENT_IMAGE_PATH').$data->h_image;
-                    $contentData['v_image'] = env('CONTENT_IMAGE_PATH').$data->v_image;
+                    $contentData['h_image'] = config('global.CONTENT_IMAGE_PATH').$data->h_image;
+                    $contentData['v_image'] = config('global.CONTENT_IMAGE_PATH').$data->v_image;
                     array_push($searchArr, $contentData);
                 }
             }

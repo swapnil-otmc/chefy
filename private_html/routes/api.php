@@ -5,7 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\CouponController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,3 +50,41 @@ Route::post('/home/menuContent' ,[CategoryController::class,'getMenuContentList'
 Route::post('/home/content/contentdetails',[ContentController::class,'getContentDetailByID'])->name('getContentDetailByID');
 Route::post('/home/content/searchcontent',[ContentController::class,'searchContent'])->name('searchContent');
 ///////// end Home Content//////////
+
+///// History Sectiom Start///// 
+Route::post('/home/history/addhistory',[HistoryController::class,'addHistory'])->name('addHistory');
+Route::post('home/history/gethistory',[HistoryController::class,'getHistory'])->name('getHistory');
+///// History Section End Here////////////
+
+//// watch Later Section Start///////
+Route::post('home/continuewatch/addWatchlist',[HistoryController::class,'addWatchlist'])->name('addWatchlist');
+Route::post('home/watchlater/getwatchlater',[HistoryController::class, 'getWatchlist'])->name('getWatchlist');
+Route::post('home/watchlater/deleteWatchList',[HistoryController::class,'removeWatchlist'])->name('removeWatchlist');
+/////// watch later section end here///////////
+
+//// Continue Watching section start //////
+Route::post('home/continuewatch/addcontinuewatching',[HistoryController::class,'addContinueWatching'])->name('addContinueWatching');
+Route::post('home/continuewatch/getcontinuewatchinglist',[HistoryController::class,'getContinueWatching'])->name('getContinueWatching');
+Route::post('home/continuewatch/deletecontinuewatchinglist',[HistoryController::class,'deleteContinueWatching'])->name('deleteContinueWatching');
+//////Continue Watching Section end Here //////////
+
+/////// User Profile Section Start Here///////
+Route::post('users/getprofile',[UserController::class,'getProfile'])->name('getProfile');
+Route::post('users/updateprofile',[UserController::class,'updateProfile'])->name('updateProfile');
+Route::post('users/deactivate',[UserController::class,'deactivateProfile'])->name('deactivateProfile');
+Route::post('users/activate',[UserController::class,'activateProfile'])->name('activateProfile');
+////////////User Section end Here //////////////////
+
+/// Payment section start ///////////////////
+Route::post('payment/createOrder',[PaymentController::class,'initiateOrder'])->name('initiateOrder');
+Route::post('payment/makePayment',[PaymentController::class,'makePayment'])->name('makePayment');
+Route::post('payment/gettransactionhistory',[PaymentController::class,'getTransactionHistory'])->name('getTransactionHistory');
+//////// Payment Section End///////////////////
+
+///////Subcription Section Start ////////////////////
+Route::post('/subscription/toggle',[LoginController::class,'subscriptionToggle'])->name('subscriptionToggle');
+///////Subcription Section end Here ////////////
+
+////// Coupon Section Start here////////////////
+Route::post('/coupon/redeem',[CouponController::class,'activateCoupon'])->name('activateCoupon');
+/////// Coupon Section End Here///////////////
